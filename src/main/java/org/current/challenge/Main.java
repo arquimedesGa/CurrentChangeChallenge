@@ -5,6 +5,7 @@ import org.current.challenge.connection.HttpConnectionApi;
 import org.current.challenge.connection.UrlConnection;
 import org.current.challenge.models.ConversionRate;
 import org.current.challenge.utilities.Conversion;
+import org.current.challenge.utilities.Messages;
 
 import java.util.Scanner;
 
@@ -14,39 +15,54 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args)  {
 
-        System.out.println("Digite uma opcao para convertir");
+        try {
 
-        Scanner prompt = new Scanner(System.in);
+            int promptInt = 0;
 
-         int promptInt = prompt.nextInt();
+            double promptValue = 0.0;
 
-        System.out.println("digite o valor a Convertir");
+            while (promptInt !=7) {
 
-        Scanner promptV = new Scanner(System.in);
+                System.out.println(Messages.getMainMessage());
 
-        int promptValue = promptV.nextInt();
+                Scanner prompt = new Scanner(System.in);
 
-        Conversion conversion = new Conversion();
+                promptInt = prompt.nextInt();
 
-        conversion.setInitAcronym(promptInt);
+                if (promptInt != 7) {
+                    System.out.println("digite o valor que deseja converter");
 
-         conversion.setAcronymCombination(conversion.getInitAcronym() + "/" + conversion.getInitAcronym2());
+                    Scanner promptV = new Scanner(System.in);
 
-         String url = UrlConnection.getUrl() + UrlConnection.getApiKey() + "/pair/" + conversion.getAcronymCombination();
+                    promptValue = promptV.nextDouble();
 
-         String httpConnectionApi = HttpConnectionApi.conecction(url);
+                    Conversion conversion = new Conversion();
 
-        Gson gson = new Gson();
+                    conversion.setInitAcronym(promptInt);
 
-        ConversionRate deserialization = gson.fromJson(httpConnectionApi, ConversionRate.class);
+                    conversion.setAcronymCombination(conversion.getInitAcronym() + "/" + conversion.getInitAcronym2());
 
-        Conversion convert = new Conversion(deserialization);
+                    String url = UrlConnection.getUrl() + UrlConnection.getApiKey() + "/pair/" + conversion.getAcronymCombination();
 
-        double d = conversion.finalConversion(convert.getTazaDeCambio(), promptValue);
+                    String httpConnectionApi = HttpConnectionApi.conecction(url);
 
-        System.out.println(d);
+                    Gson gson = new Gson();
 
+                    ConversionRate deserialization = gson.fromJson(httpConnectionApi, ConversionRate.class);
 
+                    Conversion convert = new Conversion(deserialization);
+
+                    double conversionFinal = conversion.finalConversion(convert.getTazaDeCambio(), promptValue);
+
+                    System.out.println("Valor " + promptValue + " " + conversion.getInitAcronym() + " Corresponde al valor dinal de =>> " + String.format("%.2f", conversionFinal) + " " + conversion.getInitAcronym2());
+                }
+
+            }
+            System.out.println("obrigado por usar el conversor");
+
+        } catch (NullPointerException e) {
+            e.getMessage();
+        }
 
 
     }
